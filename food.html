@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% from "_macros.html" import state_select with context %}{% block body %}<h2>🍲 {{ t('nav_food') }}</h2>
+{% if user.role=='restaurant' %}<a class="btn" href="{{ url_for('food_new') }}">+ {{ t('list_food') }}</a>{% endif %}
+<form method="get">{{ state_select(state, True) }}</form><br>{% for f in rows %}<div class="card"><span class="tag">{{ f.status }}</span><b>{{ f.org or f.display_name }}</b>
+<p>{{ f.description }} {% if f.quantity %}&middot; {{ f.quantity }}{% endif %}</p><p class="muted">{{ f.city }}{% if f.state %}, {{ f.state }}{% endif %} &middot; {{ f.pickup_by }}</p>
+{% if f.status=='available' and user.role in ['beneficiary','ngo'] %}<form method="post" action="{{ url_for('food_claim', fid=f.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn">{{ t('claim') }}</button></form>{% endif %}
+{% if f.status=='claimed' and (f.claimed_by==user.id or f.restaurant_id==user.id) %}<p><b>📍</b> {{ f.pickup_address }}</p>{% endif %}
+{% if f.restaurant_id==user.id and f.status=='claimed' %}<form method="post" action="{{ url_for('food_done', fid=f.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn alt">✔</button></form>{% endif %}</div>
+{% else %}<p class="muted">{{ t('no_items') }}</p>{% endfor %}{% endblock %}

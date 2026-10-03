@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>💬 {{ t('chat_calls') }}</h2><p><b>{{ o.title }}</b><br><span class="muted">{{ o.alias }} ↔ {{ o.porg or o.pname }}</span></p>
+{% if o.status=='accepted' %}
+{% set phone = o.pphone if is_owner else o.contact_phone %}
+{% if phone %}<a class="btn" href="tel:{{ phone }}">📞 {{ t('call') }}: {{ phone }}</a>{% endif %}
+<a class="btn" href="{{ room }}" target="_blank" rel="noopener">📹 {{ t('video_call') }}</a>
+{% if not is_owner and o.contact_note %}<p class="muted">{{ o.contact_note }}</p>{% endif %}
+{% else %}<p class="muted">📞 / 📹 — {{ t('accept') }}</p>{% endif %}</div>
+<div class="card"><h3>{{ t('messages') }}</h3><div class="chat" id="chat"></div>
+<div class="row" style="margin-top:.6rem"><input id="body" maxlength="1000" placeholder="{{ t('f_message') }}" autocomplete="off"><button class="btn" style="margin:0" id="send">{{ t('send') }}</button></div></div>
+<script>
+const box=document.getElementById('chat'),inp=document.getElementById('body');
+async function load(){const r=await (await fetch('{{ url_for("chat_msgs", oid=o.id) }}')).json();const atEnd=box.scrollTop+box.clientHeight>=box.scrollHeight-30;
+box.innerHTML='';r.forEach(m=>{const d=document.createElement('div');d.className='msg'+(m.mine?' mine':'');d.textContent=m.body;const s=document.createElement('small');s.textContent=m.time;d.appendChild(s);box.appendChild(d)});if(atEnd)box.scrollTop=box.scrollHeight}
+async function send(){const b=inp.value.trim();if(!b)return;inp.value='';const f=new FormData();f.append('body',b);
+await fetch('{{ url_for("chat_send", oid=o.id) }}',{method:'POST',body:f,headers:{'X-CSRF':'{{ csrf }}'}});await load();box.scrollTop=box.scrollHeight}
+document.getElementById('send').onclick=send;inp.addEventListener('keydown',e=>{if(e.key==='Enter')send()});load();setInterval(load,4000);
+</script>{% endblock %}

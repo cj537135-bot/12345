@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% from "_macros.html" import state_select with context %}{% block body %}<h2>👷 {{ t('jobs') }}</h2>
+{% if user and user.role in ['work_provider','ngo','csr','skill_institute','restaurant'] %}<a class="btn" href="{{ url_for('job_new') }}">+ {{ t('post_job') }}</a>{% endif %}
+<form method="get" class="row">{{ state_select(state, True) }}<input name="city" value="{{ city }}" placeholder="{{ t('f_city') }}"></form><br>
+{% for j in rows %}<div class="card"><span class="tag">{{ j.job_type }}</span> {% if j.pay %}<span class="tag">₹ {{ j.pay }}</span>{% endif %}
+<h3><a href="{{ url_for('job_view', jid=j.id) }}">{{ j.title }}</a></h3><p class="muted">{{ j.org or j.display_name }} &middot; {{ j.city }}{% if j.state %}, {{ j.state }}{% endif %}</p></div>
+{% else %}<p class="muted">{{ t('no_items') }}</p>{% endfor %}{% endblock %}

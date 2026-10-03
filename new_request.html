@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_macros.html" import icon, tile, state_select with context %}{% block body %}<div class="card"><h2>{{ t('ask_help') }}</h2>
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<select name="category">{% for k in CATEGORIES %}<option value="{{k}}">{{ ICONS[k] }} {{ t('c_'+k) }}</option>{% endfor %}</select>
+<label>{{ t('f_title') }}</label><input name="title" required>
+<label>{{ t('f_details') }}</label><textarea name="details"></textarea>
+<label>{{ t('f_city') }}</label><input name="city"><label>{{ t('f_state') }}</label>{{ state_select(user.state or '', all=False) }}
+<label>{{ t('f_urgency') }}</label><select name="urgency"><option value="normal">{{ t('normal') }}</option><option value="urgent">{{ t('urgent') }}</option></select>
+<label>{{ t('f_phone') }} (shown ONLY to a helper you accept)</label><input name="contact_phone" inputmode="tel">
+<label>Contact note (e.g. best time to call)</label><input name="contact_note">
+<button class="btn">{{ t('post_request') }}</button></form></div>{% endblock %}

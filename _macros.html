@@ -1,0 +1,5 @@
+{% macro icon(name) %}<span class="ico g-{{ name }}"><svg viewBox="0 0 64 64"><use href="#ic-{{ name }}"/></svg></span>{% endmacro %}
+{% macro tile(name) %}{% set p = photo(name) %}{% if p %}<img class="ph" src="{{ p }}" alt="">{% else %}{{ icon(name) }}{% endif %}{% endmacro %}
+{% macro state_select(sel='', auto=False, name='state', all=True) %}<select name="{{ name }}" aria-label="{{ t('f_state') }}" {% if auto %}onchange="this.form.submit()"{% endif %}>
+{% if all %}<option value="">{{ t('all_india') }}</option>{% else %}<option value="">{{ t('f_state') }}</option>{% endif %}
+{% for s in STATES %}<option value="{{ s }}" {{ 'selected' if s==sel }}>{{ s }}</option>{% endfor %}</select>{% endmacro %}

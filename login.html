@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block body %}<div class="card"><h2>{{ t('nav_login') }}</h2>
+<form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>{{ t('f_username') }}</label><input name="username" required><label>{{ t('f_password') }}</label><input type="password" name="password" required>
+<button class="btn">{{ t('nav_login') }}</button></form></div>{% endblock %}

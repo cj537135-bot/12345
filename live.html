@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% from "_macros.html" import state_select with context %}{% block body %}
+<script>window.STATE={{ state|tojson }};</script>
+<h2><span class="live-dot"></span>{{ t('live_title') }}</h2>
+<form class="card row" method="get"><b style="align-self:center">📍</b>{{ state_select(state, True) }}</form>
+{% include "_stats.html" %}
+<div class="stat"><b><span data-stat="rate">{{ stats.rate }}</span>%</b>{{ t('resolved_rate') }}</div><br>
+<div class="card"><h3>{{ t('by_category') }} — {{ state or t('all_india') }}</h3>
+<p class="muted"><span class="tag" style="background:#fbe9d6;color:#b36516">{{ t('s_open') }}</span><span class="tag" style="background:#dbe8f7;color:#2b6cb0">{{ t('in_progress') }}</span><span class="tag" style="background:#e3f4ea;color:#2f7d4f">{{ t('solved') }}</span></p>
+{% for k in CATEGORIES %}<div style="margin:.6rem 0"><b>{{ ICONS[k] }} {{ t('c_'+k) }}</b>
+<span class="muted">(<span data-stat="cat.{{k}}.open">{{ stats.cat[k].open }}</span> / <span data-stat="cat.{{k}}.progress">{{ stats.cat[k].progress }}</span> / <span data-stat="cat.{{k}}.closed">{{ stats.cat[k].closed }}</span>)</span>
+<div class="bar" data-bar="{{k}}"></div></div>{% endfor %}</div>
+<div class="card"><h3>📍 {{ t('state_wise') }}</h3><table><thead><tr><th>{{ t('f_state') }}</th><th>{{ t('s_open') }}</th><th>{{ t('in_progress') }}</th><th>{{ t('solved') }}</th></tr></thead>
+<tbody id="statebody">{% for r in table %}<tr><td>{{ r.state }}</td><td>{{ r.open }}</td><td>{{ r.progress }}</td><td>{{ r.closed }}</td></tr>{% else %}<tr><td colspan="4" class="muted">{{ t('no_items') }}</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

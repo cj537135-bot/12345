@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><span class="tag">{{ j.job_type }}</span>{% if j.pay %}<span class="tag">₹ {{ j.pay }}</span>{% endif %}<span class="tag">{{ j.status }}</span>
+<h2>{{ j.title }}</h2><p>{{ j.description }}</p><p class="muted">{{ j.org or j.display_name }} &middot; {{ j.city }}</p>
+{% if user and j.phone %}<a class="btn" href="tel:{{ j.phone }}">📞 {{ t('call') }}: {{ j.phone }}</a>{% endif %}
+{% if user and user.id==j.poster_id and j.status=='open' %}<form method="post" action="{{ url_for('job_close', jid=j.id) }}" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn alt">✔ {{ t('solved') }}</button></form>{% endif %}</div>
+{% if user and user.role=='beneficiary' and j.status=='open' %}<div class="card">
+{% if applied %}<b>✔ {{ t('applied') }}</b>{% else %}<h3>{{ t('apply') }}</h3><form method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>{{ t('f_message') }}</label><textarea name="message"></textarea><label>{{ t('f_phone') }}</label><input name="contact" inputmode="tel">
+<button class="btn">{{ t('apply') }}</button></form>{% endif %}</div>
+{% elif not user %}<div class="card"><a class="btn" href="{{ url_for('register', role='beneficiary') }}">{{ t('apply') }}</a></div>{% endif %}
+{% for a in apps %}<div class="card"><b>{{ a.alias }}</b><p>{{ a.message }}</p>{% if a.contact %}<a class="btn alt" href="tel:{{ a.contact }}">📞 {{ a.contact }}</a>{% endif %}</div>{% endfor %}{% endblock %}

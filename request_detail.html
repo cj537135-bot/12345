@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><span class="tag">{{ ICONS[r.category] }} {{ t('c_'+r.category) }}</span><span class="tag">{{ {'open':t('s_open'),'in_progress':t('in_progress'),'closed':t('solved')}[r.status] }}</span>
+<h2>{{ r.title }}</h2><p>{{ r.details }}</p><p class="muted">{{ r.alias }} &middot; {{ r.city }}{% if r.state %}, {{ r.state }}{% endif %}</p>
+{% if owner and r.status=='in_progress' and not r.beneficiary_done %}<form method="post" action="{{url_for('request_done',rid=r.id)}}"><input type="hidden" name="csrf" value="{{csrf}}"><button class="btn alt">✔ I confirm the help is done</button></form>{% elif owner and r.beneficiary_done %}<span class="tag">✓ You marked the help done — waiting for helper</span>{% endif %}</div>
+{% if not owner and user.role in PROVIDER_ROLES and not my_offer and r.status=='open' %}
+<div class="card"><h3>{{ t('offer_help') }}</h3><form method="post" action="{{ url_for('make_offer', rid=r.id) }}"><input type="hidden" name="csrf" value="{{ csrf }}">
+<textarea name="message" placeholder="What can you provide? Timings, location, cost (free?)"></textarea><button class="btn">{{ t('send_offer') }}</button></form></div>{% endif %}
+{% for o in offers %}<div class="card"><b>{{ o.org or o.display_name }}</b> <span class="tag">{{ PROVIDER_ROLES[o.role] }}</span><span class="tag">{{ o.status }}</span>
+<p>{{ o.message }}</p>
+{% if o.status!='declined' %}<a class="btn alt" href="{{ url_for('chat', oid=o.id) }}">💬 {{ t('chat_calls') }}</a>{% endif %}{% if owner and o.status=='accepted' and r.status=='in_progress' and not r.beneficiary_done %}<form method="post" action="{{url_for('request_done',rid=r.id)}}" style="display:inline"><input type="hidden" name="csrf" value="{{csrf}}"><button class="btn">✔ Help is done</button></form>{% endif %}
+{% if owner and o.status=='pending' %}
+<form method="post" action="{{ url_for('respond_offer', oid=o.id, action='accept') }}" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn">{{ t('accept') }}</button></form>
+<form method="post" action="{{ url_for('respond_offer', oid=o.id, action='decline') }}" style="display:inline"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn alt">{{ t('decline') }}</button></form>{% endif %}</div>{% endfor %}{% endblock %}
